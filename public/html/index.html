@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+    <link rel="shortcut icon" href="/public/media/favicon.ico" />
+		<title>Pat's Resume</title>
+    <style>
+		@import url('https://fonts.googleapis.com/css?family=Barrio');
+
+      html,body{
+        overflow: hidden;
+        font-family: 'Barrio', cursive !important;
+
+      }
+			body { margin: 0; }
+			canvas { width: 100%; height: 100%; display: block; }
+
+      button{
+        font-size: 18px;
+        position: absolute !important;
+        top: 0px;
+        left: 0px;
+        color: black;
+        border: none;
+        border-radius: 0px;
+        background: white;
+        border-color: black;
+        padding: 10px;
+      }
+      button:hover{
+        background: black;
+        color: white;
+      }
+
+			#introText{
+				position: absolute;
+				top: 35%;
+				right: 35%;
+				font-family: 'Barrio', cursive;
+				font-size: 75px;
+				display: none;
+			}
+      #controlsText{
+				position: absolute;
+				top: 40%;
+				right: 30%;
+				font-family: 'Barrio', cursive;
+				font-size: 35px;
+				display: none;
+			}
+			#a{
+				font-family: 'Barrio', cursive;
+				position:absolute;
+				top:50%;
+				left:10px;
+				display: none;
+			}
+			#d{
+				font-family: 'Barrio', cursive;
+				position:absolute;
+				top:50%;
+				right:10px;
+				display: none;
+			}
+			#wall1{
+				display: none;
+        position: absolute;
+				top: 30%;
+				right: 20%;
+        font-size: 30px;
+
+			}
+			#wall2{
+        display: none;
+        position: absolute;
+				top: 20%;
+				right: 20%;
+        font-size: 30px;
+			}
+			#wall3{
+				display: none;
+        position: absolute;
+				top: 30%;
+				left: 20%;
+			}
+			#wall4{
+				display: none;
+        position: absolute;
+				top: 30%;
+				right: 30%;
+			}
+      href{
+        text-decoration: none;
+      }
+      li:hover{
+        color: white;
+      }
+		</style>
+	</head>
+	<body>
+		<script src="/public/js/jquery-3.1.1.min.js"></script>
+		<script src="/public/js/three.min.js"></script>
+		<script>
+    var scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0xffffff );
+
+    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+    document.body.appendChild( renderer.domElement );
+    //--------------------------------------------------------------------------
+    //load in the models from the 404.json file
+    var loader = new THREE.ObjectLoader();
+    var myObject;
+    loader.load("public/models/scene4.json",function ( obj ) {
+      myObject = obj;
+      scene.add( myObject );
+			render();
+			fadeInOut();
+    });
+
+    camera.position.z = 0;
+    camera.position.y = 5;
+
+    var currentWall = 1; //track which wall content to display
+    var rotationSpeed = 0.0;
+    var currentRotation = camera.rotation.y;
+    var notInMotion = true;
+    function render()
+    {
+	     requestAnimationFrame( render );
+	     renderer.render( scene, camera );
+
+      //myObject.rotation.y -= 0.01;
+      //myObject.rotation.z += 0.04;
+			camera.rotation.y += rotationSpeed;
+      if(currentRotation >= 1.56)
+      {
+        rotationSpeed = 0.0;
+        currentRotation = 0.0;
+        notInMotion = true;
+      }
+      else
+      {
+        currentRotation += Math.abs(rotationSpeed);
+      }
+      //console.log(camera.rotation.y);
+    }
+    //--------------------------------------------------------------------------
+    //Helper functions
+    //--------------------------------------------------------------------------
+		function fadeInOut()
+		{
+			$( "#introText" ).fadeIn( 5000, function() {
+    	//animation complete
+			$("#introText").delay(200).fadeOut(2000, function(){
+        $('#controlsText').fadeIn(2500, function(){
+          showWallContent();
+          $('#controlsText').delay(2000).fadeOut(1000,function(){
+            document.addEventListener('keydown',onDocumentKeyDown,false);
+          });
+          $("#a").fadeIn(1000);
+          $("#d").fadeIn(1000);
+        });
+      });
+
+
+  	});
+		}
+
+    function onDocumentKeyDown(event)
+    {
+    if(notInMotion)
+    {
+      if(event.keyCode == 65)//a
+      {
+          console.log("left");
+          rotationSpeed = 0.01;
+          notInMotion = false;
+          currentWall -= 1;
+          if(currentWall < 1){
+            currentWall = 4;
+          }
+          showWallContent();
+      }
+      if(event.keyCode == 68)//d
+      {
+          console.log("right");
+          rotationSpeed = -0.01;
+          notInMotion = false;
+          currentWall += 1;
+          if(currentWall > 4){
+            currentWall = 1;
+          }
+          showWallContent();
+      }
+    }
+  }
+
+function showWallContent(){
+  console.log("show wall content");
+  if(currentWall == 1)
+  {
+    $('#wall1').delay(3000).fadeIn(750);
+    $('#wall2').fadeOut(100);
+    $('#wall3').fadeOut(100);
+    $('#wall4').fadeOut(100);
+  }
+  else if (currentWall == 2)
+  {
+    $('#wall1').fadeOut(100);
+    $('#wall2').delay(3000).fadeIn(750);
+    $('#wall3').fadeOut(100);
+    $('#wall4').fadeOut(100);
+  }
+  else if (currentWall == 3)
+  {
+    $('#wall1').fadeOut(100);
+    $('#wall2').fadeOut(100);
+    $('#wall3').delay(3000).fadeIn(750);
+    $('#wall4').fadeOut(100);
+  }
+  else if (currentWall == 4)
+  {
+    $('#wall1').fadeOut(100);
+    $('#wall2').fadeOut(100);
+    $('#wall3').fadeOut(100);
+    $('#wall4').delay(3000).fadeIn(750);
+  }
+}
+
+		</script>
+
+		<h1 id="introText">Patrick Sweeney</h1>
+    <h1 id="controlsText">use A and D to navigate the resume</h1>
+		<div id="controls"><h1 id="a">&#8592;A</h1><h1 id="d">D&#x2192;</h1></div>
+		<div id="wall1">
+      <h1>Contact Me</h1>
+      <p>Email: Sweeneyp1@xavier.edu</p>
+      <p>Phone: 614-595-8759</p>
+    </div>
+		<div id="wall2">
+      <p>Work Experience</p>
+      <h1>Frameri software engineer</h1>
+      <p style="font-size:14px;">Developed Magento Modules to enhance website functionality</p>
+      <p style="font-size:14px;">Wrote scripts to automate vital tasks such as database backing-up and code deployment</p>
+      <p style="font-size:14px;">Worked extensively with node.js</p>
+      <p style="font-size:14px;">Created an optimistic U.I. cart experience for the website’s users</p>
+      <p><a href="https://frameri.com" target="_blank">link to website</a></p>
+      <p></p>
+    </div>
+		<div id="wall3">
+    <h1 style="text-decoration: underline; font-size: 30px;">Skills</h1>
+    <p style="font-size: 25px;">Expert knowledge: Javascript, HTML, CSS, JQuery, Magento, node.js</p>
+    <p style="font-size: 25px;">Other skills: C++, Meteor, Java, PHP, App Engine, Google Cloud,<br>mySQL, Swift, mongoDB, Unity,Meteor,<br>backbone.js, C, Python</p>
+    </div>
+		<div id="wall4">
+      <h1 style="text-decoration: underline; font-size: 30px;">Projects</h1>
+      <ul>
+        - Open source Facebook app
+        <li style="font-size: 25px;"><a href="https://github.com/sweeneyp74/FreedomTorch" target="_blank">Freedom Torch</a><p></p></li>
+        - Website
+        <li style="font-size: 25px;"><a href="http://www.wookietranslator.com/" target="_blank">Wookie Translator</a><p></p></li>
+        - iOS game
+        <li style="font-size: 25px;"><a href="https://www.youtube.com/watch?v=v4akpOnNpDQ" target="_blank">Block Boogie</a><p></p></li>
+      </ul>
+    </div>
+	</body>
+</html>
